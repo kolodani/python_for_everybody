@@ -1,0 +1,174 @@
+El nivel de red se oculpa que los paquetes que salen del transmisor lleguen a su destino final, aunque el emisor y el receptor no esten adyasentes.
+esto requiere de nodos intermiedios: routers, es necesario elegir la mejor ruta
+
+---
+Misiones del nivel de red
+- encaminamiento de paquetes
+- asignacion de direcciones unicas a todas las maquinas de la red, independientes de la tecnologia de los niveles de enlace
+- control de congestion
+
+---
+Tipos de nivel de red
+segun haya o no conexiones de red:
+- no orientado a conexion
+- orientado a conexion
+segun encamine cada paquete por separado o no:
+- basado en datagramas
+- basado en circuitos virtuales
+segun se ofrezca o no un servicio fiable:
+- fiable
+- no fiable
+
+---
+Servicio no orientado a conexion
+- cada vez que el nivel superior quiere enviar datos, se componen unidades de datos (paquetes) con ellos y se envia. no hay relacion con transmisiones previas o futuras al mismo destino
+Servicio orientado a conexion
+- antes de enviar el primer byte de datos, origen y destino matienen un dialogo inicial para establecer ciertas condiciones de transferencia de informacion, que se mentienen mientras dure la transmision
+
+---
+servicio basado en datagramas
+- La direccion de destino viaja en todos los paquetes de datos
+- el encaminamiento de cada paquete es independiente, por lo tanto que varios paquetes enviados del mismo origen al mismo destino pueden viajar por diferentes rutas y tal vez llegar en desorden.
+servicio basado en circuitos virtuales
+- al principio se establece un circuito virtual por el que viajaran todos los paquetes de datos
+- la direccion de destino viaja solo en los paquetes que establecen el circuito virtual. los paquetes con datos solo llevan un identificador del circuito virtual al que pertenecen
+- todos los paquetes siguen el mismo camino y llegan en orden
+
+---
+servicio fiable:
+- se garantiza al nivel superior que todos los paquetes llegan a su destino, y que el destino es capaz de reordenarlos si se desordenan en el camino
+- para ello se numeran los paquetes, y se retransmiten los perdidos
+servicio no fiable:
+- no se garantiza al nivel superior que todos los paquetes lleguen a su destino: puede perderse paquetes
+- algun nivel superior debe ser capaz de detectar y recuperarse de estas perdidas, si la aplicacion lo requiere
+
+---
+direcciones de red
+se necesita un mecanismo de identificacion univoca de todas las maquinas de la red, independientemente de la tecnologia del nivel de enlace de cada una
+
+---
+encaminamiento
+el proceso mediante el cual se encuentra un camino entre dos puntos cualesquiera de la red
+
+---
+Algoritmo de encaminamiento: procedimiento por el cual los ruters alcanzan las decisiones de las mejores rutas para cada destino
+como parte del algoritmo de encaminamiento, normalmente los routers se mandan mensajes enre si para conseguir la informacion necesaria
+
+---
+el resultado de los algoritmos de encaminamiento es generar en los ruoters sus tabla de encaminamiento
+tabla de encaminamiento: tabla que consulta el router cada vez que recibe un paquete y tiene que encaminarlo
+
+---
+encaminamiento jerarquico
+si la rede es muy grande, las tablas de encaminamiento se hacen inmanejables
+- se tarda mucho en calcular los caminos optimos
+- se genera mucho trafico de control para conseguir difundir la informacion necesaria
+- la tabla final tiene demasiadas entradas
+solucion: encaminamiento jerarquico:
+- se divide la red en dominios
+- los algoritmos de encaminamiento se aplican solo para cada dominio
+- los dominios estan interconectados mediante routers especiales que hacen de pasarella en entre dominios
+- las maquinas de dentro de un dominio no conocen al detalle todas las de otro, sino solo las pasarellas de entrada a ellos
+- las direcciones de red de maquinas cercanas son parecidas
+
+---
+control de congestion
+- un router tiene varios enlaces de entrada y salida
+- puede que llegen paquetes mas rapido de lo que el encaminador sea capaz de darle salida
+- si esta situacion es esporadica, se resuelve con buffers
+- los buffers son limitados: cuando se llenan se ha alcanzado la congestion
+congestion: cuando el trafico deseado/originado en los extremos es mayor del que puede encaminar el nivel de red
+
+---
+medidas:
+- en redes basadas en circuitos virtuales, se puede hacer un control de admision: al intentar establecer un nuevo circuito virtual, los routers intermedios indican si tiene recursos (buffers) para que pase por ellos
+- en redes basadas en datagramas, los routers suelen descartar los paquetes que reciben y no caben en sus buffers de salida
+
+---
+ejemplo de protocolo de red: IP
+ip es un protocolo de nivel de red que ofrece servicio de mensajes:
+- no orientado a conexion
+- basado en datagramas
+- no fiable
+la unidad de datos de ip recibe el nombre de datagrama IP
+
+---
+direcciones IP
+cada interfaz fisico conectado a la internet tiene asignada una direccion IP que resulta unica en toda la red
+los 32 bits se suele expresar en (notacion decimal punteada) 212.1280.4.4
+el rengo se direcciones se divide en 5 clases
+
+---
+los primetos bits de una direccion indican cual es su clase
+en cada clase, es distinto el numero de bits de red y el de bits de maquina
+
+---
+Tipos de direcciones IP
+unicast: representa a una sola maquina
+multicast: representa a un grupo de maquinas
+broadcast: representa a todas las maquinas de una subred
+
+---
+subredes
+en ocaciones, por razones organizativas o topologicas, se utilizan algunos bits de maquina como bits de subred
+sobre todo con direcciones de clases A y B
+dad una direccion de red otorgada a una organizacion, el administrador decidira si utilizara subredes, y el numero de bits de maquina que utilizara para indicar la subred
+
+---
+el numero de bits con el que se indica la subred se denota con una mascara de subred: 32 bits, 1 para bits de red y subred, o para bits de maquina
+normalemente en cada subred se reservan:
+- la primera direccion (bits de maquina a cero) como "direccion de la red"
+- la ultima direccion (bit de maquina a uno) como "direccion de broadcast"
+
+---
+tablas de encaminamiento
+cualquier maquina ip puede estar o no configurada como encaminador:
+- si no lo esta, los datagramas IP que recibe que no son para ella se tiran
+- se lo esta, se tratan de encaminar
+
+---
+para encaminar, una maquina consulta su tabla de encaminamiento. en ella para enviar un datagrama a una ciera direccion IP destino buscara por este orden:
+1. una entrada con una direccion IP de maquina igual a la buscada
+2. una entrada con una direccion IP de red igual a la parte de red de la buscada
+3. una entrada por defecto (0.0.0.0)
+
+---
+ARP
+el protocolo de resolucion de direcciones ARP proporciona una forma de pasar de una direccion IP a una direccion Ethernet.
+cuando el nivel IP va a enviar un datagrama con una cieta direccion IP de destino:
+- si la direccion es de la misma subred, esa maquina es directamente a quien hay que enviar la trama Ethernet que contenga el datagrama
+- si no, la tabla de encaminamiento da la direccion IP del siguiente salto, que es el encaminador a quien hay que enviar la trama Ethernet que contenga el datagrama
+en cualquiera de los dos casos, solo se conoce la direccion IP de una maquina adyacente a la que pasar el datagrama, pero para formar la trama Ethernet se necesita conocer la direccion Ethernet de destino.
+
+---
+para conocer la direccion Ethernet de una maquina de la misma subred, dad su direccion IP, una maquina hace lo siguiente:
+1. envia una trama ethernet de broadcas consistente en una solicitud ARP, conteniendo la direccion IP en cuestion
+2. aquella maquina que recibe una solicitud ARP preguntando su propia IP, contesta con una trama ethernet dirigida al que prgunra conteniendo una respuesta ARP 
+cada maquina mantiene una cache de correspondencias direcciones IP a direcciones Ethernet:
+- se guarda los resultados de las solicitudes que hace
+- aprende de todas las solicitudes de otras (aprovechando que las solicitudes son broadcast)
+
+---
+el paquete solicitud ARP
+pone ethernet y IP de origen pero solo completa IP destino porque no sabe la MAC ethernet
+la respuesta cambia de lugar los datos de origen a destino y completa la direccion ethernet que es lo que se preguntaba
+
+---
+ARP gratuito
+una maquina pregunta por su propia IP
+- esto sirve para detectar IP duplicadas
+- fuerza a los demas a que actualicen la entrada de la cache correspondiente
+
+---
+RARP
+en ocasiones es necesario un metodo para optener una IP de una maquina a partir de su direccion ethernet
+mecanismo de RARP:
+1. la maquina envia un broadcast de una solicitud RARP, indicando su direccion ethernet
+2. alguna maquina de la subred le enviara una respuesta RARP indicandole cual es su direccion IP
+
+---
+lo habitual es tener una maquina como servicidor de RARP, manteniendo una tabla de correspondencias de direcciones ethernet a direcciones IP
+
+---
+ICMP
+este protocolo se utiliza para interrogar y/o comunicar condicines de errores entre maquinas
